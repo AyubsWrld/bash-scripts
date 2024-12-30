@@ -1,25 +1,47 @@
 #!/usr/sbin/bash
 
 declare -A directories=(
-  ["Graphite"]="/mnt/e/Graphite/"
-  ["Script"]="/usr/sbin/"
-  ["Notes"]="/mnt/e/Zettelkatsen/"
-  ["sr"]="/mnt/e/scripts/"
+	["Graphite"]="/mnt/e/Graphite/"
+	["Script"]="/usr/sbin/"
+	["Notes"]="/mnt/e/Zettelkatsen/"
+	["sr"]="/mnt/e/scripts/"
+)
+declare -A directoriesmb=(
+	["Programming"]="/Users/ayubmohamed/Desktop/Programming"
+	["Script"]="/usr/local/bin/bash"
+	["sr"]="/Users/ayubmohamed/scripts"
+	["Graphite"]="/Users/ayubmohamed/Desktop/Programming/Graphite/"
+	["Notes"]="/Users/ayubmohamed/Desktop/Zettelkatsen/"
 )
 
 goto() {
-  dir=$1
-  destination=${directories[$dir]}
-  # Add Directory Later
-  if [[ ${#destination} == 0 ]]; then
-    echo "Destination not found"
-  else
-    echo "Attempting to go to ${destination}"
-    cd ${destination}
-    if [[ dir == "Script" ]]; then
-      vim goto
-    fi
-  fi
+	dir=$1
+	# Add Directory Later
+
+	if [[ $OSTYPE == *"darwin"* ]]; then
+		echo "Querying macbook directories"
+		destination=${directoriesmb[$dir]}
+		if [[ ${#destination} == 0 ]]; then
+			echo "Destination not found"
+		else
+			echo "Attempting to go to ${destination}"
+			cd ${destination}
+			if [[ dir == "Script" ]]; then
+				vim goto
+			fi
+		fi
+	else
+		destination=${directories[$dir]}
+		if [[ ${#destination} == 0 ]]; then
+			echo "Destination not found"
+		else
+			echo "Attempting to go to ${destination}"
+			cd ${destination}
+			if [[ dir == "Script" ]]; then
+				vim goto
+			fi
+		fi
+	fi
 }
 
 goto $1
