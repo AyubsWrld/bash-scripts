@@ -1,0 +1,10 @@
+#!/usr/sbin/bash
+
+exp() {
+  file=$1
+  dest=$(which bash)
+  final=".${dest}/${file}"
+  mv $file "$final"
+}
+
+exp $1
