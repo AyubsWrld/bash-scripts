@@ -1,0 +1,23 @@
+#!/usr/sbin/bash
+
+declare -A directories=(
+  ["Graphite"]="/mnt/e/Graphite"
+  ["Script"]="/usr/sbin/"
+)
+
+goto() {
+  dir=$1
+  destination=${directories[$dir]}
+  # Add Directory Later
+  if [[ ${#destination} == 0 ]]; then
+    echo "Destination not found"
+  else
+    echo "Attempting to go to ${destination}"
+    cd ${destination}
+    if [[ dir == "Script" ]]; then
+      vim goto
+    fi
+  fi
+}
+
+goto $1
