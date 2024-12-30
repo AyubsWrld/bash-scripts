@@ -1,0 +1,3 @@
+#!/bin/bash
+echo "Putting the system to sleep..."
+pmset sleepnow
