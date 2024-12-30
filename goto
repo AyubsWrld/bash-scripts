@@ -1,8 +1,10 @@
 #!/usr/sbin/bash
 
 declare -A directories=(
-  ["Graphite"]="/mnt/e/Graphite"
+  ["Graphite"]="/mnt/e/Graphite/"
   ["Script"]="/usr/sbin/"
+  ["Notes"]="/mnt/e/Zettelkatsen/"
+  ["sr"]="/mnt/e/scripts/"
 )
 
 goto() {
