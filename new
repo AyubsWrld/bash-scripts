@@ -1,0 +1,44 @@
+#!/usr/sbin/bash
+
+declare -A Options=(
+  ["One"]="Apples"
+  ["Two"]="No"
+  ["Three"]="Orange"
+  ["Four"]="Test"
+  ["Eight"]="Applessssss"
+  ["Tree"]="Test"
+)
+
+key_order=("One" "Two" "Three" "Four" "Eight" "Tree")
+LONGEST=0
+for VAR in "${!Options[@]}"; do
+  LEN=${#Options[$VAR]}
+  if [[ $LONGEST -lt $LEN ]]; then
+    LONGEST=$LEN
+  else
+    LONGEST=$LONGEST
+  fi
+done
+
+TOPPADDING=""
+for ((i = 0; i < $LONGEST; i++)); do
+  TOPPADDING="${TOPPADDING}\u2500"
+done
+
+MAX=$((${#Options[@]} - 1))
+idx=0
+echo ${myString// /m}
+for VAR in "${key_order[@]}"; do
+  WORDPADDING=$(($(($LONGEST - ${#Options[$VAR]})) + $LONGEST))
+  PADDING=$((49 - $LONGEST))
+  if [[ $idx == 0 ]]; then
+    echo -e "     \u250C\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500${TOPPADDING}\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510     "
+    echo -e "     \u2502     ${Options[$VAR]}$(printf "%${PADDING}s")${GAP// /s}$(printf "%${WORDPADDING}s")${GAP// /s}\u2502"
+  elif [[ $idx == $MAX ]]; then
+    echo -e "     \u2502     ${Options[$VAR]}$(printf "%${PADDING}s")${GAP// /s}$(printf "%${WORDPADDING}s")${GAP// /s}\u2502"
+    echo -e "     \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500${TOPPADDING}\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518     "
+  else
+    echo -e "     \u2502     ${Options[$VAR]}$(printf "%${PADDING}s")${GAP// /s}$(printf "%${WORDPADDING}s")${GAP// /s}\u2502"
+  fi
+  idx=$(($idx + 1))
+done
