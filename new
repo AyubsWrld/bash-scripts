@@ -1,5 +1,11 @@
 #!/usr/sbin/bash
 
+RED_BG='\033[41m'
+GREEN_BG='\033[33m'
+YELLOW_BG='\033[43m'
+BLUE_BG='\033[44m'
+RESET='\033[0m'
+
 declare -A Options=(
   ["One"]="Apples"
   ["Two"]="No"
@@ -10,35 +16,66 @@ declare -A Options=(
 )
 
 key_order=("One" "Two" "Three" "Four" "Eight" "Tree")
-LONGEST=0
-for VAR in "${!Options[@]}"; do
-  LEN=${#Options[$VAR]}
-  if [[ $LONGEST -lt $LEN ]]; then
-    LONGEST=$LEN
-  else
-    LONGEST=$LONGEST
-  fi
-done
 
-TOPPADDING=""
-for ((i = 0; i < $LONGEST; i++)); do
-  TOPPADDING="${TOPPADDING}\u2500"
-done
+selected_idx=0 # Variable to track the selected index
 
-MAX=$((${#Options[@]} - 1))
-idx=0
-echo ${myString// /m}
-for VAR in "${key_order[@]}"; do
-  WORDPADDING=$(($(($LONGEST - ${#Options[$VAR]})) + $LONGEST))
-  PADDING=$((49 - $LONGEST))
-  if [[ $idx == 0 ]]; then
-    echo -e "     \u250C\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500${TOPPADDING}\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510     "
-    echo -e "     \u2502     ${Options[$VAR]}$(printf "%${PADDING}s")${GAP// /s}$(printf "%${WORDPADDING}s")${GAP// /s}\u2502"
-  elif [[ $idx == $MAX ]]; then
-    echo -e "     \u2502     ${Options[$VAR]}$(printf "%${PADDING}s")${GAP// /s}$(printf "%${WORDPADDING}s")${GAP// /s}\u2502"
-    echo -e "     \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500${TOPPADDING}\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518     "
-  else
-    echo -e "     \u2502     ${Options[$VAR]}$(printf "%${PADDING}s")${GAP// /s}$(printf "%${WORDPADDING}s")${GAP// /s}\u2502"
+draw_screen() {
+  clear
+  LONGEST=0
+  for VAR in "${!Options[@]}"; do
+    LEN=${#Options[$VAR]}
+    if [[ $LONGEST -lt $LEN ]]; then
+      LONGEST=$LEN
+    else
+      LONGEST=$LONGEST
+    fi
+  done
+
+  TOPPADDING=""
+  for ((i = 0; i < $LONGEST; i++)); do
+    TOPPADDING="${TOPPADDING}\u2500"
+  done
+
+  MAX=$((${#Options[@]} - 1))
+  idx=0
+  echo ${myString// /m}
+  for VAR in "${key_order[@]}"; do
+    WORDPADDING=$(($(($LONGEST - ${#Options[$VAR]})) + $LONGEST))
+    PADDING=$((49 - $LONGEST))
+    if [[ $idx == $selected_idx ]]; then
+      # Highlight selected option
+      echo -e "     ${BLUE_BG}\u2502     ${Options[$VAR]}$(printf "%${PADDING}s")${GAP// /s}$(printf "%${WORDPADDING}s")${GAP// /s}\u2502${RESET}"
+    else
+      if [[ $idx == 0 ]]; then
+        echo -e "     \u250C\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500${TOPPADDING}\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510     "
+        echo -e "     \u2502     ${Options[$VAR]}$(printf "%${PADDING}s")${GAP// /s}$(printf "%${WORDPADDING}s")${GAP// /s}\u2502"
+      elif [[ $idx == $MAX ]]; then
+        echo -e "     \u2502     ${Options[$VAR]}$(printf "%${PADDING}s")${GAP// /s}$(printf "%${WORDPADDING}s")${GAP// /s}\u2502"
+        echo -e "     \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500${TOPPADDING}\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518     "
+      else
+        echo -e "     \u2502     ${Options[$VAR]}$(printf "%${PADDING}s")${GAP// /s}$(printf "%${WORDPADDING}s")${GAP// /s}\u2502"
+      fi
+    fi
+    idx=$((idx + 1))
+  done
+}
+
+draw_screen
+
+STATUS_CODE=""
+while [[ $STATUS_CODE != "q" ]]; do
+  read -n 1 -s STATUS_CODE
+  if [[ $STATUS_CODE == "k" ]]; then
+    # Move up in the list (scroll up)
+    if [[ $selected_idx -gt 0 ]]; then
+      selected_idx=$((selected_idx - 1))
+    fi
+    draw_screen
+  elif [[ $STATUS_CODE == "j" ]]; then
+    # Move down in the list (scroll down)
+    if [[ $selected_idx -lt $MAX ]]; then
+      selected_idx=$((selected_idx + 1))
+    fi
+    draw_screen
   fi
-  idx=$(($idx + 1))
 done

@@ -1,47 +1,87 @@
 #!/usr/sbin/bash
 
-declare -A directories=(
-	["Graphite"]="/mnt/e/Graphite/"
-	["Script"]="/usr/sbin/"
-	["Notes"]="/mnt/e/Zettelkatsen/"
-	["sr"]="/mnt/e/scripts/"
-)
-declare -A directoriesmb=(
-	["Programming"]="/Users/ayubmohamed/Desktop/Programming"
-	["Script"]="/usr/local/bin/bash"
-	["sr"]="/Users/ayubmohamed/scripts"
-	["Graphite"]="/Users/ayubmohamed/Desktop/Programming/Graphite/"
-	["Notes"]="/Users/ayubmohamed/Desktop/Zettelkatsen/"
+# Define colors for formatting
+RED_BG='\033[41m'
+GREEN_BG='\033[42m'
+YELLOW_BG='\033[43m'
+BLUE_BG='\033[44m'
+RESET='\033[0m'
+BOLD='\033[1m'
+
+# Define options as an associative array
+declare -A Options=(
+  ["One"]="Apples"
+  ["Two"]="No"
+  ["Three"]="Orange"
+  ["Four"]="Test"
+  ["Eight"]="Applessssss"
+  ["Tree"]="Test"
 )
 
-goto() {
-	dir=$1
-	# Add Directory Later
+# Array to control the order of keys
+key_order=("One" "Two" "Three" "Four" "Eight" "Tree")
 
-	if [[ $OSTYPE == *"darwin"* ]]; then
-		echo "Querying macbook directories"
-		destination=${directoriesmb[$dir]}
-		if [[ ${#destination} == 0 ]]; then
-			echo "Destination not found"
-		else
-			echo "Attempting to go to ${destination}"
-			cd ${destination}
-			if [[ dir == "Script" ]]; then
-				vim goto
-			fi
-		fi
-	else
-		destination=${directories[$dir]}
-		if [[ ${#destination} == 0 ]]; then
-			echo "Destination not found"
-		else
-			echo "Attempting to go to ${destination}"
-			cd ${destination}
-			if [[ dir == "Script" ]]; then
-				vim goto
-			fi
-		fi
-	fi
+# Variable to track the selected index
+selected_idx=0
+
+# Function to draw the table
+draw_screen() {
+  clear
+  LONGEST=0
+  # Find the longest word in the options for padding
+  for VAR in "${!Options[@]}"; do
+    LEN=${#Options[$VAR]}
+    if [[ $LONGEST -lt $LEN ]]; then
+      LONGEST=$LEN
+    fi
+  done
+
+  # Create a horizontal line for the table top/bottom
+  TOPPADDING=""
+  for ((i = 0; i < $LONGEST + 6; i++)); do
+    TOPPADDING="${TOPPADDING}─"
+  done
+
+  MAX=$((${#Options[@]} - 1))
+  idx=0
+  # Print the table header
+  echo -e "     ╓──────────────────────────────────────────────╖"
+  echo -e "     ║     Option Name      ║       Value        ║"
+  echo -e "     ╠══════════════════════════════════════════════╣"
+
+  # Loop through the options to display each row
+  for VAR in "${key_order[@]}"; do
+    WORDPADDING=$(($LONGEST - ${#Options[$VAR]}))
+    PADDING=$((22 - $LONGEST))
+
+    if [[ $idx == $selected_idx ]]; then
+      # Highlight the selected row
+      echo -e "     ${BLUE_BG}║ ${BOLD}$(printf "%-18s" "$VAR")${RESET} ║ $(printf "%-${PADDING}s" "${Options[$VAR]}") ║${RESET}"
+    else
+      # Regular row
+      echo -e "     ║ ${BOLD}$(printf "%-18s" "$VAR")${RESET} ║ $(printf "%-${PADDING}s" "${Options[$VAR]}") ║"
+    fi
+    idx=$((idx + 1))
+  done
+
+  # Table footer
+  echo -e "     ╙──────────────────────────────────────────────╜"
 }
 
-goto $1
+# Function to handle user input and update the selected index
+STATUS_CODE=""
+while [[ $STATUS_CODE != "q" ]]; do
+  draw_screen
+  read -n 1 -s STATUS_CODE
+  if [[ $STATUS_CODE == "k" ]]; then
+    # Move up in the list (scroll up)
+    if [[ $selected_idx -gt 0 ]]; then
+      selected_idx=$((selected_idx - 1))
+    fi
+  elif [[ $STATUS_CODE == "j" ]]; then
+    # Move down in the list (scroll down)
+    if [[ $selected_idx -lt $MAX ]]; then
+      selected_idx=$((selected_idx + 1))
+    fi
+  fi
+done
