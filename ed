@@ -1,0 +1,9 @@
+#!/usr/sbin/bash
+
+vi() {
+  file=$1
+  path=$(which $file)
+  nvim $path
+}
+
+vi $1
